@@ -1,0 +1,31 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+django = "*"
+autopep8 = "*"
+pylint = "*"
+djangorestframework = "*"
+django-cors-headers = "*"
+pylint-django = "*"
+uritemplate = "*"
+gunicorn = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+dj-rest-auth = "*"
+django-allauth = "*"
+requests = "*"
+"backports.weakref" = "*"
+
+[requires]
+python_version = "*"
+
+[scripts]
+seed = "bash ./seed.sh"
+collect = "bash ./collect.sh"
+migrate = "python3 manage.py migrate"
