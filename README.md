@@ -2,17 +2,13 @@
 
 ## Installs Needed
 
-### Postgres
-
-Go to [Postgresapp](https://postgresapp.com/) to download and run the Postgres app for your platform.
-
 ### Learning Platform Request Collection
 
 1. Install [Postman](https://www.postman.com/downloads/)
 1. Open Postman app
 1. Click Import from the navbar
 1. Choose the Link option
-1. Paste in this URL: https://www.getpostman.com/collections/46729eac036157ae9e1e
+1. Paste in this URL: https://api.postman.com/collections/1447661-3b2a6280-fb27-48e1-ab65-ad22c45fd54b?access_key=PMAT-01HHFR8YTSD5PVR5KSQN976T4N
 1. You should be prompted to import LearnOps Collection.
 1. Click the Import button to complete the process.
 
