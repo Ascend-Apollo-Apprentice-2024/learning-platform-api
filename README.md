@@ -12,10 +12,6 @@
 1. You should be prompted to import LearnOps Collection.
 1. Click the Import button to complete the process.
 
-### pgAdmin (Optional)
-
-pgAdmin is not a required install, but if you ever have the desire to have a browser-based interface for working directly with the database, go to [pgAdmin](https://www.pgadmin.org/download/) to download the administration tool for Postgres.
-
 ## Getting Started
 
 1. Fork this repo to your own Github account.
@@ -37,10 +33,6 @@ pgAdmin is not a required install, but if you ever have the desire to have a bro
 10. Create the app and **do not close** the screen that appears
 11. Go to Github and click the **Generate a new client secret** button
 12. **DO NOT CLOSE TAB. CLIENT AND SECRET NEEDED BELOW.**
-
-## Environment Variables
-
-Several environment variables need to be set up by you to make the setup process faster and more secure.
 
 ### Django Secret Key
 
@@ -72,16 +64,33 @@ export LEARN_OPS_SUPERUSER_PASSWORD=AdminPasswordOfYourChoice
 
 Then reload your bash session with `source ~/.zshrc` if you are using zshell or `source ~/.bashrc` if you have the default bash environment.
 
-### Create the Database
+### Install and Configure Postgres
 
-In the main directory there is a bash script that you can run to create the database and database user needed for the project. You can run the script with the command below.
+In your Ubuntu terminal run the following command to initiate the installation and configuration of the Learning Platform. It will install the correct version of Python, PostgreSQL and then run migrations to create tables, and finally load fixtures to seed the database with sample data.
 
-It will prompt you for your password.
-
+If you are on PC:
 ```sh
-./setup_mac.sh
+./linuxInstall-dev.sh -d=$LEARN_OPS_DB \
+    -u=$LEARN_OPS_USER \
+    -p=$LEARN_OPS_PASSWORD \
+    -r=$LEARN_OPS_SUPERUSER_NAME \
+    -j=$LEARN_OPS_SUPERUSER_PASSWORD \
+    -c=$LEARN_OPS_CLIENT_ID \
+    -s=$LEARN_OPS_SECRET_KEY
 ```
 
+When prompted to "remove write-protected regular file './LearningAPI/fixtures/superuser.json'?" type `y`
+
+If you are on mac:
+```sh
+./macInstall-dev.sh -d=$LEARN_OPS_DB \
+    -u=$LEARN_OPS_USER \
+    -p=$LEARN_OPS_PASSWORD \
+    -r=$LEARN_OPS_SUPERUSER_NAME \
+    -j=$LEARN_OPS_SUPERUSER_PASSWORD \
+    -c=$LEARN_OPS_CLIENT_ID \
+    -s=$LEARN_OPS_SECRET_KEY
+```
 ## Testing the Installation
 
 1. Start the API in debug mode in Visual Studio Code.
