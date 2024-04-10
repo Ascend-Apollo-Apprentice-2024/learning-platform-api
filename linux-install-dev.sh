@@ -30,10 +30,19 @@ else
     # install pyenv on WSL Ubuntu environment
     curl https://pyenv.run | bash
 
-    # add necessary config to shell profile (.zshrc)
-    echo 'export PATH="$HOME/.pyenv/bin:$PATH"
-    eval "$(pyenv init --path)"
-    eval "$(pyenv virtualenv-init -)"' >> $HOME/.zshrc
+    #check if .zshrc startup script exists, if not create it
+    if [ -f $HOME/.zshrc ]; then
+        # add necessary config to shell profile (.zshrc)
+        echo 'export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv virtualenv-init -)"' >> $HOME/.zshrc
+    else
+        # add necessary config to shell profile (.bashrc)
+        echo 'export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv virtualenv-init -)"' >> $HOME/.bashrc
+    fi
+
 
     # update path of current subshell execution
     export PATH="$HOME/.pyenv/bin:$PATH"
