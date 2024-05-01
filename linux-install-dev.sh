@@ -75,7 +75,18 @@ then
     echo "PostgreSQL is not installed"
     sudo apt install git curl python3-pip postgresql postgresql-contrib -y
     # Do we need to start this here?
-    sudo systemctl start postgresql.service
+    
+
+
+    # Check if systemctl command exists
+if command -v systemctl &> /dev/null; then
+    # Start PostgreSQL using systemctl
+    sudo systemctl start postgresql
+else
+    # Start PostgreSQL using service (fallback)
+    sudo service postgresql start
+fi
+
 fi
 
 # drop database before it's created
@@ -124,7 +135,17 @@ echo "Found version $VERSION"
 #####
 sudo sed -i -e 's/scram-sha-256/trust/g' /etc/postgresql/"$VERSION"/main/pg_hba.conf
 # restart postgres service
-sudo systemctl restart postgresql.service
+    # Check if systemctl command exists
+if [ -x "$(command -v systemctl)" ] && systemctl status postgresql &> /dev/null; then
+    # Start PostgreSQL using systemctl
+    sudo systemctl restart postgresql
+else
+    # Start PostgreSQL using service (fallback)
+    sudo service postgresql restart
+fi
+
+
+
 
 echo "Generating Django password"
 #takes plain text password and used the utility to encrypt the password
