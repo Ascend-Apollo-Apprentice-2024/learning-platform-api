@@ -18,7 +18,7 @@ esac
 done
 
 # update apt(package manager for ubuntu)
-sudo apt update -y
+# sudo apt update -y
 
 # Check to see if pyenv is already installed, if so skip installation of pyenv
 # &> the & is wildcard, meaning all output in this case, 1 is standard output, 2 is error output
@@ -149,6 +149,7 @@ fi
 
 echo "Generating Django password"
 #takes plain text password and used the utility to encrypt the password
+export DJANGO_SETTINGS_MODULE=LearningPlatform.settings
 DJANGO_GENERATED_PASSWORD=$(python3 ./djangopass.py "$SUPERPASS" >&1)
 
 sudo tee ./LearningAPI/fixtures/superuser.json <<EOF
