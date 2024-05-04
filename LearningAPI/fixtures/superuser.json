@@ -3,10 +3,10 @@
         "model": "auth.user",
         "pk": null,
         "fields": {
-            "password": "pbkdf2_sha256$390000$fPbaQlRh1B5z3Gzdn8kGqC$XnmOjIk953lzwv30wTShgPqwqWhnOZggiclw/6eEwnk=",
+            "password": "pbkdf2_sha256$390000$JTr7duhxlk8sR1hxivYvGg$DJjbvTeR3a+db3fmYziTaxXQNw7tg3hDWcoozaeJCJg=",
             "last_login": null,
             "is_superuser": true,
-            "username": "j_vanduyne",
+            "username": "Odie123",
             "first_name": "Admina",
             "last_name": "Straytor",
             "email": "me@me.com",
