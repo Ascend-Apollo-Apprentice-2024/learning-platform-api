@@ -148,6 +148,7 @@ fi
 
 
 echo "Generating Django password"
+export DJANGO_SETTINGS_MODULE="LearningPlatform.settings"
 #takes plain text password and used the utility to encrypt the password
 DJANGO_GENERATED_PASSWORD=$(python3 ./djangopass.py "$SUPERPASS" >&1)
 
