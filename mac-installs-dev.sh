@@ -12,6 +12,7 @@ for i in "$@"; do
     -s=* | --secretkey=*) SECRETKEY="${i#*=}" ;;
     -j=* | --superpass=*) SUPERPASS="${i#*=}" ;;
     -r=* | --superuser=*) SUPERUSER="${i#*=}" ;;
+    
     *) ;; # unkown option ;;
     esac
 done
@@ -63,19 +64,18 @@ fi
 if ! command -v psql &>/dev/null; then
     echo "PostgreSQL is not installed"
     brew install postgresql
-    brew services start postgresql
 fi
+    brew services start postgresql
 
 # Drop database before it's (re)created
-sudo su - postgres <<COMMANDS
 psql -c "DROP DATABASE IF EXISTS $DATABASE WITH (FORCE);"
 psql -c "CREATE DATABASE $DATABASE;"
+psql -c "DROP ROLE $USER;"
 psql -c "CREATE USER $USER WITH PASSWORD '$PASSWORD';"
 psql -c "ALTER ROLE $USER SET client_encoding TO 'utf8';"
 psql -c "ALTER ROLE $USER SET default_transaction_isolation TO 'read committed';"
 psql -c "ALTER ROLE $USER SET timezone TO 'UTC';"
 psql -c "GRANT ALL PRIVILEGES ON DATABASE $DATABASE TO $USER;"
-COMMANDS
 
 # Check if Pipenv is installed
 if ! command -v pipenv &>/dev/null; then
@@ -107,6 +107,20 @@ pip3 install -r requirements.txt
 echo "Checking version of Postgres"
 VERSION=$($(sudo find /usr -wholename '*/bin/postgres') -V | (grep -E -oah -m 1 '[0-9]{1,}') | head -1)
 echo "Found version $VERSION"
+
+# Capture the version number using 'postgres --version' command
+VERSION=$(postgres --version | awk '{print $3}')
+
+# If 'postgres --version' doesn't provide the version number, fall back to extracting from the text
+if [[ -z $VERSION ]]; then
+    VERSION=$(echo "postgres (PostgreSQL) 14.11 (Homebrew)" | awk '{print $3}')
+fi
+
+# Extract the major version number (14) from the version string
+VERSION=$(echo "$VERSION" | cut -d'.' -f1)
+
+echo "Version number: $VERSION"
+
 
 # This is where we left off on Thursday
 # TODO: Don't need any of this for mac

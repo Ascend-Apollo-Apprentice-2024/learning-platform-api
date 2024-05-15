@@ -16,6 +16,7 @@
 
 1. Ensure that your system has the required build dependencies.
 2. For macOS, ensure that homebrew is installed.
+[Link to HomeBrew Installation](https://docs.brew.sh/Installation)
 
 ### Ubuntu/Debian-based systems
 
@@ -24,12 +25,6 @@ sudo apt-get update
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
     libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
     libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-```
-
-### macOS
-
-```bash
-brew install openssl readline sqlite3 xz zlib
 ```
 
 ## Installing Pyenv
