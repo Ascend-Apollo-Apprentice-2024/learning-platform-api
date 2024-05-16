@@ -15,8 +15,9 @@
 ## System Requirements
 
 1. Ensure that your system has the required build dependencies.
-2. For macOS, ensure that homebrew is installed.
-[Link to HomeBrew Installation](https://docs.brew.sh/Installation)
+2. Follow instructions to install homebrew for mac: [Homebrew Installation](https://docs.brew.sh/Installation)
+3. Follow instructions to install Ubuntu for windows: [Ubuntu Installation](https://apps.microsoft.com/detail/9pdxgncfsczv?rtc=1&hl=en-us&gl=US)
+
 
 ### Ubuntu/Debian-based systems
 
@@ -90,6 +91,12 @@ pyenv install {python version}
 ## Environment Variables
 
 Several environment variables need to be set up by you to make the setup process faster and more secure.
+
+### Install Django
+
+```sh
+pip install django
+```
 
 ### Django Secret Key
 
