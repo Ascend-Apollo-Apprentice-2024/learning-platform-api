@@ -213,5 +213,6 @@ echo "loading data from backup"
 python3 manage.py loaddata socialaccount
 python3 manage.py loaddata complete_backup
 
-#delete ./LearningAPI/fixtures/socialaccount.json
 rm ./LearningAPI/fixtures/socialaccount.json
+rm ./LearningAPI/fixtures/superuser.json
+
