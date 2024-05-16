@@ -98,6 +98,11 @@ psql -c "ALTER ROLE $USER SET client_encoding TO 'utf8';"
 psql -c "ALTER ROLE $USER SET default_transaction_isolation TO 'read committed';"
 psql -c "ALTER ROLE $USER SET timezone TO 'UTC';"
 psql -c "GRANT ALL PRIVILEGES ON DATABASE $DATABASE TO $USER;"
+psql learnopsdev -c "GRANT ALL ON ALL TABLES IN SCHEMA public to $USER;"
+psql learnopsdev -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to $USER;"
+psql learnopsdev -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to $USER;"
+psql -c "GRANT postgres to $USER;"
+psql -c "SELECT * FROM pg_tables ORDER BY tableowner;"
 COMMANDS
 
 # Check if Pipenv is installed
@@ -197,8 +202,12 @@ echo '[
   ]
 ' > ./LearningAPI/fixtures/socialaccount.json
 
+echo "About to run migrations"
+
 # Run existing migrations
 python3 manage.py migrate
+
+echo "loading data from backup"
 
 # Load data from backup
 python3 manage.py loaddata socialaccount
