@@ -135,14 +135,6 @@ echo "Found version $VERSION"
 #####
 sudo sed -i -e 's/scram-sha-256/trust/g' /etc/postgresql/"$VERSION"/main/pg_hba.conf
 # restart postgres service
-    # Check if systemctl command exists
-if [ -x "$(command -v systemctl)" ] && systemctl status postgresql &> /dev/null; then
-    # Start PostgreSQL using systemctl
-    sudo systemctl restart postgresql
-else
-    # Start PostgreSQL using service (fallback)
-    sudo service postgresql restart
-fi
 
 
 
