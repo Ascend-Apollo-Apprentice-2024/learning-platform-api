@@ -16,6 +16,7 @@
 
 1. Ensure that your system has the required build dependencies.
 2. For macOS, ensure that homebrew is installed.
+[Link to HomeBrew Installation](https://docs.brew.sh/Installation)
 
 ### Ubuntu/Debian-based systems
 
@@ -24,12 +25,6 @@ sudo apt-get update
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
     libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
     libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-```
-
-### macOS
-
-```bash
-brew install openssl readline sqlite3 xz zlib
 ```
 
 ## Installing Pyenv
@@ -132,8 +127,48 @@ In the main directory there is a bash script that you can run to create the data
 
 It will prompt you for your password.
 
-```sh
-./setup_mac.sh
+
+## Linux installs:
+
+1st make sure your user has permissions to run the script.
+```bash
+chmod +x linux-install-dev.sh
+```
+
+- Run the linux-install-dev.sh in the linux terminal:
+
+```bash 
+./linux-install-dev.sh \
+    -d=$LEARN_OPS_DB \
+    -u=$LEARN_OPS_USER \
+    -p=$LEARN_OPS_PASSWORD \
+    -h=$LEARN_OPS_HOST \
+    -P=$LEARN_OPS_PORT \
+    -c=$LEARN_OPS_CLIENT_ID \
+    -s=$LEARN_OPS_SECRET_KEY \
+    -j=$LEARN_OPS_SUPERUSER_PASSWORD \
+    -r=$LEARN_OPS_SUPERUSER_NAME
+```
+## Mac Installs:
+
+1st make sure your user has permissions to run the script.
+```bash
+chmod +x setup_mac.sh
+```
+
+- Run the setup_mac.sh in the linux terminal:
+
+```bash 
+./setup_mac.sh \
+    -d=$LEARN_OPS_DB \
+    -u=$LEARN_OPS_USER \
+    -p=$LEARN_OPS_PASSWORD \
+    -h=$LEARN_OPS_HOST \
+    -P=$LEARN_OPS_PORT \
+    -c=$LEARN_OPS_CLIENT_ID \
+    -s=$LEARN_OPS_SECRET_KEY \
+    -j=$LEARN_OPS_SUPERUSER_PASSWORD \
+    -r=$LEARN_OPS_SUPERUSER_NAME
 ```
 
 ## Testing the Installation
