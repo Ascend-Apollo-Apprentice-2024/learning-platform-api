@@ -7,11 +7,11 @@ JOIN "LearningAPI_learningweight" as lw ON lr.weight_id = lw.id
 WHERE lr.achieved = TRUE
 GROUP BY lr.student_id
 ),
-
 student_name as (
 SELECT 
     nsu.user_id, 
-    CONCAT(au.first_name, ' ', au.last_name) as name
+    CONCAT(au.first_name, ' ', au.last_name) as name,
+    nsu.github_handle
 FROM "LearningAPI_nssuser" as nsu
 JOIN "auth_user" as au ON au.id = nsu.user_id
 ),
@@ -59,6 +59,14 @@ student_books as (
     FROM "LearningAPI_book" bk
     JOIN "LearningAPI_project" pr on pr.book_id = bk.id
     JOIN "LearningAPI_studentproject" spr on spr.project_id = pr.id
+),
+student_assessment_status as (
+    SELECT
+        sa.student_id,
+        sa.status_id,
+        sas.status
+    FROM "LearningAPI_studentassessment" sa
+    JOIN "LearningAPI_studentassessmentstatus" sas on sas.id = sa.assessment_id
 )
 Select 
     nu.user_id,
@@ -71,7 +79,9 @@ Select
     sp.proposal_status,
     sb.book_id,
     sb.book_name,
-    sb.project_name
+    sb.project_name,
+    sas.status_id,
+    nu.github_handle
 FROM "LearningAPI_nssuser" nu
 JOIN "LearningAPI_nssusercohort" nuc on nu.user_id = nuc.nss_user_id
 LEFT JOIN student_score as ss on ss.student_id = nu.user_id
@@ -79,7 +89,6 @@ LEFT JOIN student_name as sn on sn.user_id = nu.user_id
 LEFT JOIN student_tag as st on st.student_id = nu.user_id
 LEFT JOIN student_proposals as sp on sp.id = nu.user_id
 LEFT JOIN student_books as sb on sb.student_id = nu.id
-WHERE nuc.cohort_id = 9;
-
-
--- book --> project --> student_project _ student (nss_user)
+LEFT JOIN student_assessment_status as sas on sas.student_id = nu.id
+WHERE nuc.cohort_id = 9
+ORDER BY nu.user_id;
