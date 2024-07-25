@@ -15,7 +15,6 @@ SELECT
 FROM "LearningAPI_nssuser" as nsu
 JOIN "auth_user" as au ON au.id = nsu.user_id
 ),
-
 student_tag as (
 SELECT 
     lst.student_id, 
@@ -50,6 +49,16 @@ student_proposals as (
     LEFT JOIN "LearningAPI_proposalstatus" as ps on ps.id = tl.status_id
     LEFT JOIN "LearningAPI_course" as co on co.id = cap.course_id
     Order by u.id
+),
+student_books as (
+    SELECT
+        spr.student_id as student_id,
+        bk.id as book_id, 
+        bk."name" as book_name,
+        pr."name" as project_name
+    FROM "LearningAPI_book" bk
+    JOIN "LearningAPI_project" pr on pr.book_id = bk.id
+    JOIN "LearningAPI_studentproject" spr on spr.project_id = pr.id
 )
 Select 
     nu.user_id,
@@ -59,11 +68,18 @@ Select
     st."name",
     sp.proposal_id,
     sp.course_id,
-    sp.proposal_status
+    sp.proposal_status,
+    sb.book_id,
+    sb.book_name,
+    sb.project_name
 FROM "LearningAPI_nssuser" nu
 JOIN "LearningAPI_nssusercohort" nuc on nu.user_id = nuc.nss_user_id
 LEFT JOIN student_score as ss on ss.student_id = nu.user_id
 LEFT JOIN student_name as sn on sn.user_id = nu.user_id
 LEFT JOIN student_tag as st on st.student_id = nu.user_id
 LEFT JOIN student_proposals as sp on sp.id = nu.user_id
+LEFT JOIN student_books as sb on sb.student_id = nu.id
 WHERE nuc.cohort_id = 9;
+
+
+-- book --> project --> student_project _ student (nss_user)
