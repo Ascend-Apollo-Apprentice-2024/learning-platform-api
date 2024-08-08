@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from LearningAPI.models import NssUser
+from LearningAPI.models.people import NssUser
 
 
 class NssUserSerializer(serializers.ModelSerializer):

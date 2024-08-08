@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from LearningAPI.models import NssUserCohort
+from LearningAPI.models.people import NssUserCohort
 
 
 class NssUserCohortSerializer(serializers.ModelSerializer):

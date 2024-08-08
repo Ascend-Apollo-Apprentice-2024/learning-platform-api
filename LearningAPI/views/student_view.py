@@ -23,6 +23,8 @@ from LearningAPI.models.people import (Cohort, StudentNote, NssUser, StudentAsse
 from LearningAPI.models.skill import (CoreSkillRecord, LearningRecord,
                                       LearningRecordEntry)
 from .personality import myers_briggs_persona
+from django.db import connection
+from LearningAPI.serializers import StudentCohortDataSerializer
 
 
 class StudentPagination(PageNumberPagination):
@@ -167,25 +169,21 @@ class StudentViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         if cohort is not None:
-            cohort_filter = Cohort.objects.get(pk=cohort)
-            students = students.filter(assigned_cohorts__cohort=cohort_filter)
-
-            for student in students:
-                try:
-                    personality = StudentPersonality.objects.get(student=student)
-
-                except StudentPersonality.DoesNotExist:
-                    personality = StudentPersonality()
-                    personality.briggs_myers_type = ""
-                    personality.bfi_extraversion = 0
-                    personality.bfi_agreeableness = 0
-                    personality.bfi_conscientiousness = 0
-                    personality.bfi_neuroticism = 0
-                    personality.bfi_openness = 0
-                    personality.student = student
-                    personality.save()
-
-            serializer = MicroStudents(students, many=True)
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM get_students_by_cohortId(%s)", [cohort])
+                columns = [col[0] for col in cursor.description]
+                results = [
+                    dict(zip(columns, row))
+                    for row in cursor.fetchall()
+                ]
+        
+                serializer = StudentCohortDataSerializer(results, many=True)
+                return Response({
+                    "count": len(results),
+                    "next": None,
+                    "previous": None,
+                    "results": serializer.data
+                })
 
         page = self.paginate_queryset(serializer.data)
         paginated_response = self.get_paginated_response(page)

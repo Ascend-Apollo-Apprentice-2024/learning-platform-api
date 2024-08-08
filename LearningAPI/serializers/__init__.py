@@ -4,3 +4,4 @@ from .nssuser_serializer import NssUserSerializer
 from .capstone_serializer import CapstoneSerializer
 from .proposal_status_serializer import ProposalStatusSerializer
 from .nssuser_cohort_serializer import NssUserCohortSerializer
+from .student_by_cohort_serializer import StudentCohortDataSerializer
