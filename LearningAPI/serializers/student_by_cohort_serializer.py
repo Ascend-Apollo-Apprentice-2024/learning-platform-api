@@ -6,7 +6,7 @@ class StudentCohortDataSerializer(serializers.Serializer):
     name = serializers.CharField(source='student_name')
     score = serializers.IntegerField()
     tags = serializers.ListField(child=serializers.CharField(), source='tag_name')
-    proposals = serializers.ListField(child=serializers.CharField())
+    proposals = serializers.CharField()
     assessment_status = serializers.IntegerField(source='status_id')
     github = serializers.CharField(source='github_handle')
     archetype = serializers.CharField(source='briggs_myers_type')
