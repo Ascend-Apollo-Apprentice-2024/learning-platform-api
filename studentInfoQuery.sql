@@ -1,3 +1,5 @@
+SELECT * FROM get_students_by_cohortId(9)
+
 DROP FUNCTION IF EXISTS get_students_by_cohortId (INTEGER);
 
 CREATE FUNCTION get_students_by_cohortId(user_cohort_id INTEGER)
@@ -7,12 +9,11 @@ RETURNS TABLE (
     score INTEGER,
     tag_id INTEGER,
     tag_name TEXT,
-    proposal_id INTEGER,
-    course_id INTEGER,
-    proposal_status TEXT,
+    proposals TEXT,
     book_id INTEGER,
     book_name TEXT,
     project_name TEXT,
+    book_index TEXT,
     status_id INTEGER,
     github_handle TEXT,
     cohort_id INTEGER,
@@ -114,8 +115,8 @@ student_assessment_status AS (
     )
 )
 SELECT 
-    sn."name"::text AS student_name,
     nu.user_id::int,
+    sn."name"::text AS student_name,
     ss.score::int,
     st.tag_id::int,
     st."name"::text AS tag_name,
