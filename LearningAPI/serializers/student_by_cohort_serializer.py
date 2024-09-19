@@ -5,7 +5,7 @@ from rest_framework import serializers
 class StudentCohortDataSerializer(serializers.Serializer):
     proposals = serializers.SerializerMethodField()
     book = serializers.SerializerMethodField()
-    cohort = serializers.SerializerMethodField()
+    cohorts = serializers.SerializerMethodField()
     
     def get_proposals(self, obj):
     
@@ -28,18 +28,18 @@ class StudentCohortDataSerializer(serializers.Serializer):
                 "project": obj["project_name"]
             }
 
-    def get_cohort(self, obj):
+    def get_cohorts(self, obj):
         
-       return {
+       return [{
                 "id": obj["cohort_id"],
                 "name": obj["cohort_name"],
                 "start_date": obj["break_start_date"]
-            }
+            }]
     
     id = serializers.IntegerField(source='user_id')
     name = serializers.CharField(source='student_name')
     score = serializers.IntegerField()
-    tags = serializers.ListField(child=serializers.CharField(), source='tag_name')
+    tags = serializers.CharField()
     assessment_status = serializers.IntegerField(source='status_id')
     github = serializers.CharField(source='github_handle')
     archetype = serializers.CharField(source='briggs_myers_type')

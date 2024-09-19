@@ -1,4 +1,5 @@
-SELECT * FROM get_students_by_cohortId(9)
+-- Active: 1725496082556@@127.0.0.1@5432@learnopsdev
+SELECT * FROM get_students_by_cohortId (9)
 
 DROP FUNCTION IF EXISTS get_students_by_cohortId (INTEGER);
 
@@ -7,8 +8,7 @@ RETURNS TABLE (
     user_id INTEGER,
     student_name TEXT,
     score INTEGER,
-    tag_id INTEGER,
-    tag_name TEXT,
+    tags TEXT,
     proposals TEXT,
     book_id INTEGER,
     book_name TEXT,
@@ -43,12 +43,17 @@ student_name AS (
 ),
 student_tag AS (
     SELECT 
-        lst.student_id, 
-        lst.tag_id, 
-        lt.name
+        lst.student_id,
+        json_agg(
+            json_build_object(
+                'tag_id', lst.tag_id,
+                'tag_name', lt.name
+            )
+        )::text AS tags
     FROM "LearningAPI_studenttag" AS lst
     JOIN "LearningAPI_tag" AS lt ON lt.id = lst.tag_id
     WHERE lst.tag_id IS NOT NULL
+    GROUP BY lst.student_id
 ),
 student_proposals AS (
     SELECT
@@ -118,9 +123,8 @@ SELECT
     nu.user_id::int,
     sn."name"::text AS student_name,
     ss.score::int,
-    st.tag_id::int,
-    st."name"::text AS tag_name,
-    COALESCE(sp.proposals, '[]'::text) AS proposals,
+    COALESCE(st.tags, '[]'::text) as tags,
+    sp.proposals::text,
     sb.book_id::int,
     sb.book_name::text,
     sb.project_name::text,
