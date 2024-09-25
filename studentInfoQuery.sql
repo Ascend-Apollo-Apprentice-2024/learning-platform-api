@@ -1,5 +1,5 @@
 -- Active: 1725496082556@@127.0.0.1@5432@learnopsdev
-SELECT * FROM get_students_by_cohortId (9)
+SELECT * FROM get_students_by_cohortId (15)
 
 DROP FUNCTION IF EXISTS get_students_by_cohortId (INTEGER);
 
