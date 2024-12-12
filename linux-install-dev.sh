@@ -4,8 +4,8 @@ set -eu
 
 #Takes parameters we pass in and sets them as local variables
 for i in "$@"
-do 
-case $i in 
+do
+case $i in
     -d=*|--database=*) DATABASE="${i#*=}" ;;
     -u=*|--user=*) USER="${i#*=}" ;;
     -p=*|--password=*) PASSWORD="${i#*=}" ;;
@@ -30,10 +30,19 @@ else
     # install pyenv on WSL Ubuntu environment
     curl https://pyenv.run | bash
 
-    # add necessary config to shell profile (.zshrc)
-    echo 'export PATH="$HOME/.pyenv/bin:$PATH"
-    eval "$(pyenv init --path)"
-    eval "$(pyenv virtualenv-init -)"' >> $HOME/.zshrc
+    #check if .zshrc startup script exists, if not create it
+    if [ -f $HOME/.zshrc ]; then
+        # add necessary config to shell profile (.zshrc)
+        echo 'export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv virtualenv-init -)"' >> $HOME/.zshrc
+    else
+        # add necessary config to shell profile (.bashrc)
+        echo 'export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv virtualenv-init -)"' >> $HOME/.bashrc
+    fi
+
 
     # update path of current subshell execution
     export PATH="$HOME/.pyenv/bin:$PATH"
@@ -66,7 +75,18 @@ then
     echo "PostgreSQL is not installed"
     sudo apt install git curl python3-pip postgresql postgresql-contrib -y
     # Do we need to start this here?
-    sudo systemctl start postgresql.service
+
+
+
+    # Check if systemctl command exists
+if command -v systemctl &> /dev/null; then
+    # Start PostgreSQL using systemctl
+    sudo systemctl start postgresql
+else
+    # Start PostgreSQL using service (fallback)
+    sudo service postgresql start
+fi
+
 fi
 
 # drop database before it's created
@@ -78,6 +98,11 @@ psql -c "ALTER ROLE $USER SET client_encoding TO 'utf8';"
 psql -c "ALTER ROLE $USER SET default_transaction_isolation TO 'read committed';"
 psql -c "ALTER ROLE $USER SET timezone TO 'UTC';"
 psql -c "GRANT ALL PRIVILEGES ON DATABASE $DATABASE TO $USER;"
+psql learnopsdev -c "GRANT ALL ON ALL TABLES IN SCHEMA public to $USER;"
+psql learnopsdev -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to $USER;"
+psql learnopsdev -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to $USER;"
+psql -c "GRANT postgres to $USER;"
+psql -c "SELECT * FROM pg_tables ORDER BY tableowner;"
 COMMANDS
 
 # Check if Pipenv is installed
@@ -92,7 +117,7 @@ fi
 #Do we need to activate the virtual environment? Possibly.
 #use venv to create the virtual env directory
 #running venv will create directory called 'venv' in project directory
-#python3 -m venv venv 
+#python3 -m venv venv
 #get the path of the virtual environment
 #create environment variable
 export VIRTUAL_ENV="$(pwd)/venv"
@@ -102,7 +127,7 @@ python3 -m venv $VIRTUAL_ENV
 source $VIRTUAL_ENV/bin/activate
 
 pip3 install wheel
-# Install dependencies from requirements.txt file 
+# Install dependencies from requirements.txt file
 pip3 install -r requirements.txt
 
 # find which version of Postgres is installed
@@ -115,10 +140,14 @@ echo "Found version $VERSION"
 #####
 sudo sed -i -e 's/scram-sha-256/trust/g' /etc/postgresql/"$VERSION"/main/pg_hba.conf
 # restart postgres service
-sudo systemctl restart postgresql.service
+
+
+
 
 echo "Generating Django password"
+export DJANGO_SETTINGS_MODULE="LearningPlatform.settings"
 #takes plain text password and used the utility to encrypt the password
+export DJANGO_SETTINGS_MODULE=LearningPlatform.settings
 DJANGO_GENERATED_PASSWORD=$(python3 ./djangopass.py "$SUPERPASS" >&1)
 
 sudo tee ./LearningAPI/fixtures/superuser.json <<EOF
@@ -173,12 +202,17 @@ echo '[
   ]
 ' > ./LearningAPI/fixtures/socialaccount.json
 
+echo "About to run migrations"
+
 # Run existing migrations
 python3 manage.py migrate
+
+echo "loading data from backup"
 
 # Load data from backup
 python3 manage.py loaddata socialaccount
 python3 manage.py loaddata complete_backup
 
-#delete ./LearningAPI/fixtures/socialaccount.json
 rm ./LearningAPI/fixtures/socialaccount.json
+rm ./LearningAPI/fixtures/superuser.json
+

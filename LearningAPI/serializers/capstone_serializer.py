@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from LearningAPI.models import Capstone
+from LearningAPI.models.coursework import Capstone
 
 
 class CapstoneSerializer(serializers.ModelSerializer):
