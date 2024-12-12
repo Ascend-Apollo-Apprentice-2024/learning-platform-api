@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from LearningAPI.models import ProposalStatus
+from LearningAPI.models.coursework import ProposalStatus
 
 
 class ProposalStatusSerializer(serializers.ModelSerializer):

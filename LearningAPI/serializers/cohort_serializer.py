@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from LearningAPI.models import Cohort
+from LearningAPI.models.people import Cohort
 
 
 class CohortSerializer(serializers.ModelSerializer):
