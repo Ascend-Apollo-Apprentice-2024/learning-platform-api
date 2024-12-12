@@ -4,8 +4,8 @@ set -eu
 
 #Takes parameters we pass in and sets them as local variables
 for i in "$@"
-do 
-case $i in 
+do
+case $i in
     -d=*|--database=*) DATABASE="${i#*=}" ;;
     -u=*|--user=*) USER="${i#*=}" ;;
     -p=*|--password=*) PASSWORD="${i#*=}" ;;
@@ -18,7 +18,7 @@ esac
 done
 
 # update apt(package manager for ubuntu)
-# sudo apt update -y
+sudo apt update -y
 
 # Check to see if pyenv is already installed, if so skip installation of pyenv
 # &> the & is wildcard, meaning all output in this case, 1 is standard output, 2 is error output
@@ -75,7 +75,7 @@ then
     echo "PostgreSQL is not installed"
     sudo apt install git curl python3-pip postgresql postgresql-contrib -y
     # Do we need to start this here?
-    
+
 
 
     # Check if systemctl command exists
@@ -117,7 +117,7 @@ fi
 #Do we need to activate the virtual environment? Possibly.
 #use venv to create the virtual env directory
 #running venv will create directory called 'venv' in project directory
-#python3 -m venv venv 
+#python3 -m venv venv
 #get the path of the virtual environment
 #create environment variable
 export VIRTUAL_ENV="$(pwd)/venv"
@@ -127,7 +127,7 @@ python3 -m venv $VIRTUAL_ENV
 source $VIRTUAL_ENV/bin/activate
 
 pip3 install wheel
-# Install dependencies from requirements.txt file 
+# Install dependencies from requirements.txt file
 pip3 install -r requirements.txt
 
 # find which version of Postgres is installed
