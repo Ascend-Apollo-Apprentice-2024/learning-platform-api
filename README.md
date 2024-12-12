@@ -128,11 +128,9 @@ export LEARN_OPS_SUPERUSER_PASSWORD=AdminPasswordOfYourChoice
 
 Then reload your bash session with `source ~/.zshrc` if you are using zshell or `source ~/.bashrc` if you have the default bash environment.
 
-### Create the Database
+### Install and Configure Postgres
 
-In the main directory there is a bash script that you can run to create the database and database user needed for the project. You can run the script with the command below.
-
-It will prompt you for your password.
+In your Ubuntu terminal run the following command to initiate the installation and configuration of the Learning Platform. It will install the correct version of Python, PostgreSQL and then run migrations to create tables, and finally load fixtures to seed the database with sample data.
 
 
 ## Linux installs:
@@ -144,7 +142,7 @@ chmod +x linux-install-dev.sh
 
 - Run the linux-install-dev.sh in the linux terminal:
 
-```bash 
+```bash
 ./linux-install-dev.sh \
     -d=$LEARN_OPS_DB \
     -u=$LEARN_OPS_USER \
@@ -165,7 +163,7 @@ chmod +x setup_mac.sh
 
 - Run the setup_mac.sh in the linux terminal:
 
-```bash 
+```bash
 ./setup_mac.sh \
     -d=$LEARN_OPS_DB \
     -u=$LEARN_OPS_USER \
@@ -178,6 +176,18 @@ chmod +x setup_mac.sh
     -r=$LEARN_OPS_SUPERUSER_NAME
 ```
 
+When prompted to "remove write-protected regular file './LearningAPI/fixtures/superuser.json'?" type `y`
+
+If you are on mac:
+```sh
+./macInstall-dev.sh -d=$LEARN_OPS_DB \
+    -u=$LEARN_OPS_USER \
+    -p=$LEARN_OPS_PASSWORD \
+    -r=$LEARN_OPS_SUPERUSER_NAME \
+    -j=$LEARN_OPS_SUPERUSER_PASSWORD \
+    -c=$LEARN_OPS_CLIENT_ID \
+    -s=$LEARN_OPS_SECRET_KEY
+```
 ## Testing the Installation
 
 1. Start the API in debug mode in Visual Studio Code.
