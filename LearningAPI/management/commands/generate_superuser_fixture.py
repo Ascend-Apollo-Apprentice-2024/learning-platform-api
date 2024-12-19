@@ -3,6 +3,7 @@ import json
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 import sys
+from django.contrib.auth.hashers import make_password
 
 class Command(BaseCommand):
     help = "Generate a JSON file for the superuser using environment variables"
@@ -10,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # Get environment variables
         username = os.getenv("SUPERUSER_USERNAME")
-        password = os.getenv("SUPERUSER_PASSWORD")
+        password = make_password(os.getenv("SUPERUSER_PASSWORD"))
 
         if not username or not password:
             raise ValueError("Environment variables SUPERUSER_USERNAME and SUPERUSER_PASSWORD are required")
