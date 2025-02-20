@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_DB: learnopsdev
+      POSTGRES_USER: learnopsdev
+      POSTGRES_PASSWORD: ascend
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: django_api
+    restart: always
+    environment:
+      LEARN_OPS_DB: learnopsdev
+      LEARN_OPS_USER: learnopsdev
+      LEARN_OPS_PASSWORD: ascend
+      LEARN_OPS_HOST: db  # Connects to the Postgres service by name
+      LEARN_OPS_PORT: 5432
+    depends_on:
+      - db
+      - nginx
+    expose:
+      - "8000"
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py loaddata complete_backup.json &&
+             gunicorn LearningPlatform.wsgi:application --bind 0.0.0.0:8000"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+  client:
+    build:
+      context: ../learning-platform-client
+    container_name: learning_platform_client
+    restart: always
+    ports:
+      - "3000:80"  # Exposes port 3000 for the client, mapped to Nginx in the container
+    depends_on:
+      - api
+    networks:
+      - default  # Ensure the client can communicate with the api and db services
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    driver: bridge
