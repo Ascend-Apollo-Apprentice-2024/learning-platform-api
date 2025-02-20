@@ -35,3 +35,5 @@ EXPOSE 80 443
 
 # Start Nginx and Gunicorn together
 CMD service nginx start && gunicorn your_project_name.wsgi:application --bind 0.0.0.0:8000
+
+ENTRYPOINT ["/app/entrypoint.sh"]

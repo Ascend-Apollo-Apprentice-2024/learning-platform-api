@@ -1,20 +1,30 @@
 #!/bin/bash
-set -eu
 
-# Activate Python environment
-source "$(pwd)/venv/bin/activate"
+echo '[
+    {
+       "model": "sites.site",
+       "pk": 1,
+       "fields": {
+          "domain": "learningplatform.com",
+          "name": "Learning Platform"
+       }
+    },
+    {
+        "model": "socialaccount.socialapp",
+        "pk": 1,
+        "fields": {
+            "provider": "github",
+            "name": "Github",
+            "client_id": "'"$CLIENTID"'",
+            "secret": "'"$SECRETKEY"'",
+            "key": "",
+            "sites": [
+                1
+            ]
+        }
+    }
+  ]
+' > /app/LearningAPI/fixtures/socialaccount.json
 
-# Start PostgreSQL service
-if command -v systemctl &> /dev/null; then
-    sudo systemctl start postgresql
-else
-    sudo service postgresql start
-fi
-
-# Run migrations and load data
-python3 manage.py migrate
-python3 manage.py loaddata socialaccount
-python3 manage.py loaddata complete_backup
-
-# Start Django development server
-python3 manage.py runserver 0.0.0.0:8000
+# Run the default command
+exec "$@"
