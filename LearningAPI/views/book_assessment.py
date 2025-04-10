@@ -1,3 +1,4 @@
+import json
 """Assessment view module"""
 import os
 import requests
@@ -15,7 +16,7 @@ from LearningAPI.models.people import (Assessment, NssUser, StudentAssessment,
                                        StudentAssessmentStatus)
 from LearningAPI.models.coursework import Book
 from LearningAPI.models.skill import AssessmentWeight, LearningWeight
-
+from django.core.cache import cache
 
 class BookAssessmentView(ViewSet):
     """Book assessment view set"""
@@ -23,13 +24,24 @@ class BookAssessmentView(ViewSet):
     def list(self, request):
         """Listing all assessments"""
         book_id = request.query_params.get("bookId", None)
-        assessments = Assessment.objects.all()
+        
+        limit = request.query_params.get('limit', '')
 
         if book_id is not None:
             assessments = Assessment.objects.filter(book__id=book_id)
+        else:
+            assessments = Assessment.objects.all()
+            
+        cache_key = f"assessments:q={book_id}:limit={limit}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(json.loads(cached_data), status=status.HTTP_200_OK)  # Return cached response
 
         serializer = AssessmentSerializer(assessments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = serializer.data
+        cache.set(cache_key, json.dumps(data), timeout=600)  # Store in cache
+        return Response(data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
         """Handle GET requests for single assessment
@@ -37,10 +49,18 @@ class BookAssessmentView(ViewSet):
         Returns:
             Response -- JSON serialized instance
         """
+        cache_key = f"assessment:{pk}"
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(json.dumps(cached_data))
+         
         try:
             assessment = Assessment.objects.get(pk=pk)
             serializer = AssessmentSerializer(assessment)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            
+            data = serializer.data
+            cache.set(cache_key,data,timeout=600)
+            return Response(data, status=status.HTTP_200_OK)
 
         except Assessment.DoesNotExist:
             return Response(
