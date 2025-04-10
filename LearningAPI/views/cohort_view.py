@@ -1,3 +1,4 @@
+import json
 from django.db.models import Count, Q
 from django.db import IntegrityError
 from django.http import HttpResponseServerError
@@ -8,6 +9,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from ..models.people import Cohort, NssUser, NssUserCohort, CohortInfo
 from ..models.coursework import CohortCourse, Course, Project, StudentProject
+from django.core.cache import cache
+
 
 
 class CohortPermission(permissions.BasePermission):
@@ -81,10 +84,17 @@ class CohortViewSet(ViewSet):
 
     def retrieve(self, request, pk=None):
         """Handle GET requests for single item
-
         Returns:
             Response -- JSON serialized instance
-        """
+        """ 
+       
+        """Handle GET requests for single item with caching"""
+
+        cache_key = f"cohort:{pk}"
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(json.dumps(cached_data))
+         
         try:
             cohort = Cohort.objects.annotate(
                 students=Count(
@@ -94,7 +104,11 @@ class CohortViewSet(ViewSet):
             ).get(pk=pk)
 
             serializer = CohortSerializer(cohort, context={'request': request})
-            return Response(serializer.data)
+            
+            data = serializer.data
+            cache.set(cache_key,data,timeout=600)
+            
+            return Response(data)
         except Exception as ex:
             return HttpResponseServerError(ex)
 
@@ -141,39 +155,58 @@ class CohortViewSet(ViewSet):
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def list(self, request):
-        """Handle GET requests for all items
+        """Handle GET requests for all items with caching"""
 
-        Returns:
-            Response -- JSON serialized array
-        """
+        # Generate a cache key that includes query parameters (q and limit)
+        search_terms = request.query_params.get('q', '')
+        limit = request.query_params.get('limit', '')
+
+        cache_key = f"cohorts:q={search_terms}:limit={limit}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(json.loads(cached_data), status=status.HTTP_200_OK)  # Return cached response
+
         try:
             cohorts = Cohort.objects.all()
 
             # Fuzzy search on `q` param present
-            search_terms = self.request.query_params.get('q', None)
-            limit = self.request.query_params.get('limit', None)
-
-            if search_terms is not None:
+            if search_terms:
                 for letter in list(search_terms):
                     cohorts = cohorts.filter(name__icontains=letter)
 
                 serializer = MiniCohortSerializer(
-                    cohorts, many=True, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                    cohorts, many=True, context={'request': request}
+                )
+
+                data = serializer.data
+                cache.set(cache_key, json.dumps(data), timeout=600)  # Store in cache
+
+                return Response(data, status=status.HTTP_200_OK)
 
             cohorts = cohorts.annotate(
                 students=Count('members', filter=Q(
-                    members__nss_user__user__is_staff=False)),
+                    members__nss_user__user__is_staff=False
+                )),
                 is_instructor=Count('members', filter=Q(
-                    members__nss_user__user=request.auth.user)),
+                    members__nss_user__user=request.auth.user
+                )),
             ).all().order_by('-pk')
 
-            if limit is not None:
-                cohorts = cohorts.order_by("-start_date")[0:int(limit)]
+            if limit:
+                cohorts = cohorts.order_by("-start_date")[:int(limit)]
 
             serializer = CohortSerializer(
-                cohorts, many=True, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_200_OK)
+                cohorts, many=True, context={'request': request}
+            )
+
+            data = serializer.data
+
+            # Store the result in cache
+            cache.set(cache_key, json.dumps(data), timeout=600)
+
+            return Response(data, status=status.HTTP_200_OK)
+
         except Exception as ex:
             return HttpResponseServerError(ex)
 
